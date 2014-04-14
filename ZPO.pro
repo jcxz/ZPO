@@ -17,20 +17,21 @@ UI_DIR = obj
 
 
 QMAKE_CXXFLAGS = -std=c++11 -Wall -Wextra -pedantic -g
+INCLUDEPATH += src
 
 SOURCES += \
     src/main.cpp \
     src/Mesh.cpp \
-    src/warp.cpp \
     src/MeshWarpWidget.cpp \
-    src/MainWindow.cpp
+    src/MainWindow.cpp \
+    src/morph.cpp
 
 HEADERS += \
     src/Mesh.h \
     src/Point.h \
-    src/warp.h \
     src/MeshWarpWidget.h \
-    src/MainWindow.h
+    src/MainWindow.h \
+    src/morph.h
 
 FORMS += \
     src/MainWindow.ui

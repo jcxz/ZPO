@@ -19,8 +19,10 @@ Makefile.Release
 ui_*.h
 
 # ignore debug and release directories
+/output
+/output/*
 /obj
-/obj/*
+/obj/*  
 /debug
 /debug/*
 /release

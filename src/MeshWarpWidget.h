@@ -45,6 +45,12 @@ class MeshWarpWidget : public QWidget
       std::cout << "New mesh      : " << m_mesh << std::endl;
     }
 
+    const Mesh & mesh(void) const { return m_mesh; }
+    const QImage & image(void) const { return m_img; }
+
+    bool setImage(const QImage & img);
+    bool setImage(const QString & filename);
+
   protected:
     virtual void paintEvent(QPaintEvent *event) override;
     virtual void mouseMoveEvent(QMouseEvent *event) override;

@@ -1,4 +1,4 @@
-#include "warp.h"
+#include "morph.h"
 #include "Point.h"
 #include "Mesh.h"
 
@@ -6,9 +6,10 @@
 #include <iomanip>
 #include <memory>
 #include <vector>
+#include <cassert>
 
 #include <QImage>
-
+#include <QDebug>
 
 
 ///////////////////////////////////// Debugging Functions ///////////////////////////////////////////////
@@ -317,4 +318,83 @@ QImage warp(const QImage & src_img, const Mesh & src_mesh, const Mesh & dst_mesh
   warp_impl(src_img, src_mesh, dst_mesh, tmp_img, dst_img, img_w, img_h);
 
   return dst_img;
+}
+
+
+////////////////////////////////////// Morphing (Public interface) /////////////////////////////////////////////////////////
+
+QImage morphFrame(const QImage & src_img, const Mesh & src_mesh,
+                  const QImage & dst_img, const Mesh & dst_mesh,
+                  Mesh & tmp_mesh, float t)
+{
+  tmp_mesh.interpolate(src_mesh, dst_mesh, t);
+  QImage img1(warp(src_img, src_mesh, tmp_mesh));
+  if (img1.isNull())
+  {
+    std::cerr << "Failed to warp source to temporary"  << std::endl;
+    return QImage();
+  }
+
+  QImage img2(warp(dst_img, dst_mesh, tmp_mesh));
+  if (img2.isNull())
+  {
+    std::cerr << "Failed to warp destination to temporary"  << std::endl;
+    return QImage();
+  }
+
+  assert(img1.size() == img2.size());
+
+  int img_w = img1.width();
+  int img_h = img1.height();
+  int cnt = img_w * img_h;
+
+  QImage img3(img_w, img_h, QImage::Format_ARGB32);
+
+  const uint8_t * __restrict__ p_img1 = (uint8_t *) img1.bits();
+  const uint8_t * __restrict__ p_img2 = (uint8_t *) img2.bits();
+  uint8_t * __restrict__ p_img3 = (uint8_t *) img3.bits();
+  float w1 = t;
+  float w2 = (1.0f - t);
+
+  for (int i = 0; i < cnt; ++i)
+  {
+    p_img3[0] = p_img1[0] * w1 + p_img2[0] * w2;
+    p_img3[1] = p_img1[1] * w1 + p_img2[1] * w2;
+    p_img3[2] = p_img1[2] * w1 + p_img2[2] * w2;
+    p_img3[3] = 255;
+    p_img1 += 4;
+    p_img2 += 4;
+    p_img3 += 4;
+  }
+  return img3;
+}
+
+
+void morph(const QImage & src_img, const Mesh & src_mesh,
+           const QImage & dst_img, const Mesh & dst_mesh,
+           int nframes)
+{
+  if (!src_mesh.hasSameDimensions(dst_mesh))
+  {
+    std::cerr << "WARNING: source mesh has different dimensions than destination mesh" << std::endl;
+    return;
+  }
+
+  Mesh tmp_mesh(src_mesh.sizeX(), src_mesh.sizeY(), src_mesh.width(), src_mesh.heigth());
+
+  for (int i = 0; i < nframes; ++i)
+  {
+    float t = float(i) / (float(nframes - 1));
+
+    QImage img(morphFrame(src_img, src_mesh, dst_img, dst_mesh, tmp_mesh, t));
+    if (img.isNull())
+    {
+      std::cerr << "WARNING: Failed to morph frame n. " << i << std::endl;
+    }
+
+    if (!img.save(QString("frame_%1.jpg").arg(i)))
+    {
+      std::cerr << "WARNING: Failed to save frame n. " << i << std::endl;
+    }
+  }
 }

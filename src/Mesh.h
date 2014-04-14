@@ -11,34 +11,44 @@ class Mesh
 {
   public:
     Mesh(void)
-      : m_size_x(0)
+      : m_width(0)
+      , m_heigth(0)
+      , m_size_x(0)
       , m_size_y(0)
       , m_size(0)
       , m_points(nullptr)
     { }
 
     Mesh(float density, int width, int heigth)
-      : m_size_x(0)
+      : m_width(0)
+      , m_heigth(0)
+      , m_size_x(0)
       , m_size_y(0)
       , m_size(0)
       , m_points(nullptr)
     { resize(density, width, heigth); }
 
     Mesh(float density_w, float density_h, int width, int heigth)
-      : m_size_x(0)
+      : m_width(0)
+      , m_heigth(0)
+      , m_size_x(0)
       , m_size_y(0)
       , m_size(0)
       , m_points(nullptr)
     { resize(density_w, density_h, width, heigth); }
 
-    Mesh(int mesh_w, int mesh_h, int width, int heigth)
-      : m_size_x(0)
-      , m_size_y(0)
-      , m_size(0)
-      , m_points(nullptr)
-    { resize(mesh_w, mesh_h, width, heigth); }
+    Mesh(int mesh_w, int mesh_h, int width, int heigth, bool recalc = true)
+      : m_width(width)
+      , m_heigth(heigth)
+      , m_size_x(mesh_w)
+      , m_size_y(mesh_h)
+      , m_size(mesh_w * mesh_h)
+      , m_points(new Point[m_size])
+    { if (recalc) resample(); }
 
     // getter functions
+    int width(void) const { return m_width; }
+    int heigth(void) const { return m_heigth; }
     int pointCount(void) const { return m_size; }
     int sizeX(void) const { return m_size_x; }
     int sizeY(void) const { return m_size_y; }
@@ -65,7 +75,12 @@ class Mesh
 
     // resamples the spacing between mesh points, so that it
     // fits the given width and height (the number of mesh points remains unchanged)
-    void resampleTo(int width, int height);
+    void resampleTo(int width, int height)
+    {
+      m_width = width;
+      m_heigth = height;
+      return resample();
+    }
 
     // resizes the mesh (i.e. it changes the number of control points in the mesh while
     // also resampling it to given width and height)
@@ -100,8 +115,17 @@ class Mesh
     // returns false if dimensions do not agree
     bool copyPoints(const Mesh & other);
 
+    // This method updates the points in the mesh by interpolating
+    // between a given source and destination mesh
+    // The sizes of all three meshes have to match
+    void interpolate(const Mesh & src_mesh, const Mesh & dst_mesh, float t);
+
     // debugging functions
     friend std::ostream & operator<<(std::ostream & os, const Mesh & mesh);
+
+
+  private:
+    void resample(void);
 
   private:
     int m_width;                        /// the width that is represented by mesh

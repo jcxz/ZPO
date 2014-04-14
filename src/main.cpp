@@ -1,7 +1,8 @@
 #include "Mesh.h"
 #include "Point.h"
-#include "warp.h"
+#include "morph.h"
 #include "MeshWarpWidget.h"
+#include "MainWindow.h"
 
 #include <QApplication>
 #include <QImage>
@@ -43,8 +44,8 @@ static const char *formatToString(QImage::Format fmt)
 static bool testWarping(void)
 {
   // load the input image
-  //QImage img("Face360.BMP");
-  QImage img("D:\\AC601\\obrazky\\PasoveFoto\\orezane.jpg");
+  QImage img("D:\\AC601\\ostatne\\Programovanie\\C_and_C++\\Qt_projects\\MeshWarping\\Face360.BMP");
+  //QImage img("D:\\AC601\\obrazky\\PasoveFoto\\orezane.jpg");
   if (img.isNull())
   {
     std::cerr << "Failed to load input image" << std::endl;
@@ -89,8 +90,8 @@ static bool testWarping(void)
   }
 
   // write the output
-  //if (!res.save("Face360_warped.bmp"))
-  if (!res.save("PasoveFoto_warped.bmp"))
+  if (!res.save("Face360_warped.bmp"))
+  //if (!res.save("PasoveFoto_warped.bmp"))
   {
     std::cerr << "Failed to save the resulting warped image" << std::endl;
     return false;
@@ -108,7 +109,7 @@ int main(int argc, char *argv[])
   //std::cout << "test mesh: " << test << std::endl;
   testWarping();
   return 1;
-#else
+#elif 0
   QApplication app(argc, argv);
 
   //QImage img("Face360.BMP");
@@ -124,21 +125,12 @@ int main(int argc, char *argv[])
   w.show();
 
   return app.exec();
-#endif
-}
-
-
-
-#if 0
-#include "MainWindow.h"
-#include <QApplication>
-
-int main(int argc, char *argv[])
-{
-  QApplication a(argc, argv);
+#else
+  QApplication app(argc, argv);
   MainWindow w;
+
   w.show();
 
-  return a.exec();
-}
+  return app.exec();
 #endif
+}

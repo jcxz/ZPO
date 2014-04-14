@@ -3,6 +3,7 @@
 #include <iostream>
 #include <iomanip>
 #include <cstring>
+#include <cassert>
 
 
 
@@ -21,6 +22,24 @@ void Mesh::setPoint(int col, int row, int x, int y)
 }
 
 
+void Mesh::resample(void)
+{
+  float factor_w = float(m_width) / float(m_size_x - 1);
+  float factor_h = float(m_heigth) / float(m_size_y - 1);
+
+  for (int y = 0; y < m_size_y; ++y)
+  {
+    for (int x = 0; x < m_size_x; ++x)
+    {
+      Point & pt = at(x, y);
+      pt.x = x * factor_w;
+      pt.y = y * factor_h;
+    }
+  }
+}
+
+
+#if 0
 void Mesh::resampleTo(int width, int height)
 {
   m_width = width;
@@ -36,6 +55,7 @@ void Mesh::resampleTo(int width, int height)
     ++points;
   }
 }
+#endif
 
 
 #if 0
@@ -205,6 +225,29 @@ bool Mesh::copyPoints(const Mesh & other)
   std::memcpy(m_points.get(), other.m_points.get(), sizeof(Point) * m_size);
 
   return true;
+}
+
+
+void Mesh::interpolate(const Mesh & src_mesh, const Mesh & dst_mesh, float t)
+{
+  assert(hasSameDimensions(src_mesh) && hasSameDimensions(dst_mesh));
+
+  float w1 = t;
+  float w2 = (1.0f - t);
+
+  const Point * __restrict__ p_src_mesh = src_mesh.data();
+  const Point * __restrict__ p_dst_mesh = dst_mesh.data();
+  Point * __restrict__ p_this_mesh = data();
+
+  for (int i = 0; i < m_size; ++i)
+  {
+    p_this_mesh->x = p_src_mesh->x * w1 + p_dst_mesh->x * w2;
+    p_this_mesh->y = p_src_mesh->y * w1 + p_dst_mesh->y * w2;
+
+    ++p_src_mesh;
+    ++p_dst_mesh;
+    ++p_this_mesh;
+  }
 }
 
 

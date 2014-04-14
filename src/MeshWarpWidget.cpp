@@ -1,11 +1,39 @@
 #include "MeshWarpWidget.h"
-#include "warp.h"
+#include "morph.h"
 
 #include <QPainter>
+#include <QStyleOption>
 #include <QMouseEvent>
 
 
 static constexpr int CONTROL_POINT_SIZE = 6;
+
+
+
+bool MeshWarpWidget::setImage(const QImage & img)
+{
+  m_active_cp_x = 0;
+  m_active_cp_y = 0;
+  m_has_active_cp = false;
+  m_orig_img = img;
+  m_img = img;
+  m_transform = QTransform();
+  m_orig_mesh.resize(0.01f, 0.01f, img.width(), img.height());
+  m_mesh.resize(0.01f, 0.01f, img.width(), img.height());
+  return true;
+}
+
+
+bool MeshWarpWidget::setImage(const QString & filename)
+{
+  QImage img(filename);
+  if (img.isNull())
+  {
+    std::cerr << "Failed to open image: " << filename.toStdString() << std::endl;
+    return false;
+  }
+  return setImage(img);
+}
 
 
 void MeshWarpWidget::drawMesh(QPainter & painter)
@@ -63,8 +91,17 @@ void MeshWarpWidget::paintEvent(QPaintEvent *event)
   m_transform.translate(x, y);
 
   QPainter painter(this);
-  painter.setTransform(m_transform);
 
+  /*
+   * The following 3 lines of code should enable Qt stylesheets for this widget
+   * this code was inspired by qt's documentation.
+   * see: http://developer.qt.nokia.com/doc/qt-4.8/stylesheet-reference.html
+   */
+  QStyleOption opt;
+  opt.init(this);
+  style()->drawPrimitive(QStyle::PE_Widget, &opt, &painter, this);
+
+  painter.setTransform(m_transform);
   painter.drawImage(0, 0, m_img);
 
   QPen pen(QColor(Qt::red));
