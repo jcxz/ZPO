@@ -1,0 +1,30 @@
+# ignore all vim swap files
+*.swp
+
+# and gedit temporary files
+*~
+
+# ignore visual studio debug database
+*.pdb
+
+# ignore QtCreator user settings
+*.pro.user
+
+# ignore qmake generated makefiles
+Makefile
+Makefile.Debug
+Makefile.Release
+
+# ignore generated ui headers
+ui_*.h
+
+# ignore debug and release directories
+/obj
+/obj/*
+/debug
+/debug/*
+/release
+/release/*  
+/build
+/build/*
+.qmake.stash
