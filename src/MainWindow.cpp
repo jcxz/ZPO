@@ -10,6 +10,9 @@ MainWindow::MainWindow(QWidget *parent)
 {
   ui->setupUi(this);
   //ui->widget->setStyleSheet("background-color: red;");
+  //ui->srcWarp->setImage("D:\\AC601\\obrazky\\PasoveFoto\\orezane.jpg");
+  //ui->dstWarp->setImage("D:\\AC601\\obrazky\\Katka.png");
+  //ui->dstWarp->setImage("D:\\AC601\\obrazky\\Fun\\cow_costume.jpg");
   ui->srcWarp->setImage("data/Man.jpg");
   ui->dstWarp->setImage("data/Woman.jpg");
 }

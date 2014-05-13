@@ -1,19 +1,17 @@
-#include "morph.h"
+#include "Morpher.h"
 #include "Point.h"
 #include "Mesh.h"
+#include "debug.h"
 
-#include <iostream>
-#include <iomanip>
 #include <memory>
-#include <vector>
-#include <cassert>
+//#include <vector>
 
 #include <QImage>
-#include <QDebug>
 
 
 ///////////////////////////////////// Debugging Functions ///////////////////////////////////////////////
 
+#ifdef MORPHER_DEBUG
 static void printIntercepts(int *src_row_intercepts, int *dst_row_intercepts, int img_h, int mesh_w)
 {
   std::cout << "[mesh_width, img_height]" << std::endl;
@@ -73,6 +71,7 @@ static void displayHorizontalPolyLineColumnIntersections(uint32_t *img, int img_
     }
   }
 }
+#endif
 
 /////////////////////////////////////////// Helper functions for warping ////////////////////////////////////////////////
 
@@ -269,7 +268,7 @@ static void warp_impl(const QImage & src_img, const Mesh & src_mesh, const Mesh 
 
 ////////////////////////////////////// Warping (Public interface) /////////////////////////////////////////////////////////
 
-QImage warp(const QImage & src_img, const Mesh & src_mesh, const Mesh & dst_mesh)
+QImage Morpher::warp(const QImage & src_img, const Mesh & src_mesh, const Mesh & dst_mesh)
 {
   // check on preconditions
   if (!src_mesh.hasSameDimensions(dst_mesh))
@@ -323,9 +322,9 @@ QImage warp(const QImage & src_img, const Mesh & src_mesh, const Mesh & dst_mesh
 
 ////////////////////////////////////// Morphing (Public interface) /////////////////////////////////////////////////////////
 
-QImage morphFrame(const QImage & src_img, const Mesh & src_mesh,
-                  const QImage & dst_img, const Mesh & dst_mesh,
-                  Mesh & tmp_mesh, float t)
+QImage Morpher::morphFrame(const QImage & src_img, const Mesh & src_mesh,
+                           const QImage & dst_img, const Mesh & dst_mesh,
+                           Mesh & tmp_mesh, float t)
 {
   tmp_mesh.interpolate(src_mesh, dst_mesh, t);
 
@@ -371,9 +370,9 @@ QImage morphFrame(const QImage & src_img, const Mesh & src_mesh,
 }
 
 
-void morph(const QImage & src_img, const Mesh & src_mesh,
-           const QImage & dst_img, const Mesh & dst_mesh,
-           int nframes)
+void Morpher::morph(const QImage & src_img, const Mesh & src_mesh,
+                    const QImage & dst_img, const Mesh & dst_mesh,
+                    int nframes)
 {
   if (!src_mesh.hasSameDimensions(dst_mesh))
   {

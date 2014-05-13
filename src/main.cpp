@@ -1,44 +1,16 @@
 #include "Mesh.h"
 #include "Point.h"
 #include "morph.h"
+#include "Movie.h"
 #include "MeshWarpWidget.h"
 #include "MainWindow.h"
+#include "utils.h"
 
 #include <QApplication>
 #include <QImage>
+#include <QPainter>
 #include <iostream>
 
-
-
-static const char *formatToString(QImage::Format fmt)
-{
-  #define CASE(e) case e: return #e;
-
-  switch (fmt)
-  {
-    CASE(QImage::Format_Invalid);
-    CASE(QImage::Format_Mono);
-    CASE(QImage::Format_MonoLSB);
-    CASE(QImage::Format_Indexed8);
-    CASE(QImage::Format_RGB32);
-    CASE(QImage::Format_ARGB32);
-    CASE(QImage::Format_ARGB32_Premultiplied);
-    CASE(QImage::Format_RGB16);
-    CASE(QImage::Format_ARGB8565_Premultiplied);
-    CASE(QImage::Format_RGB666);
-    CASE(QImage::Format_ARGB6666_Premultiplied);
-    CASE(QImage::Format_RGB555);
-    CASE(QImage::Format_ARGB8555_Premultiplied);
-    CASE(QImage::Format_RGB888);
-    CASE(QImage::Format_RGB444);
-    CASE(QImage::Format_ARGB4444_Premultiplied);
-    default: return "Uknown format";
-  }
-
-  #undef CASE
-
-  return "Uknown format";
-}
 
 
 static bool testWarping(void)
@@ -52,7 +24,7 @@ static bool testWarping(void)
     return false;
   }
 
-  std::cout << "Source image format         : " << formatToString(img.format()) << std::endl;
+  std::cout << "Source image format         : " << utils::qImageFormatToString(img.format()) << std::endl;
   std::cout << "Source image width x height : " << img.width() << " x " << img.height() << std::endl;
 
   // set up src mesh
@@ -101,10 +73,66 @@ static bool testWarping(void)
 }
 
 
+static bool testMovie(void)
+{
+  constexpr int frame_w = 100;
+  constexpr int frame_h = 100;
+  constexpr QImage::Format frame_fmt = QImage::Format_ARGB32;
+
+  Movie movie;
+
+  {
+    INFOM("Generating frames ...");
+
+    int argc = 0;
+    char **argv = nullptr;
+    QGuiApplication app(argc, argv);
+    QPainter painter;
+    for (int i = 0; i < 100; ++i)
+    {
+      QImage frame(frame_w, frame_h, frame_fmt);
+
+      frame.fill(Qt::red);
+
+      painter.begin(&frame);
+      painter.drawText(10, 30, QString("frame #%1").arg(i));
+      painter.end();
+
+      QString frame_filename(QString("output/testMovie/generated_%1.jpg").arg(i));
+      if (!frame.save(frame_filename))
+      {
+        WARNM("Failed to save generated frame #" << i <<
+              " to " << frame_filename.toStdString());
+      }
+
+      movie.addFrame(frame);
+    }
+
+    INFOM("Frames generated");
+  }
+
+  INFOM("Saving as AVI");
+
+  if (!movie.saveAsAVI("output/testMovie/generated.avi"))
+  {
+    ERRORM("Failed to save frames to file output/testMovie/generated.avi");
+    return false;
+  }
+
+  INFOM("AVI saved");
+
+  return true;
+}
+
+
 
 int main(int argc, char *argv[])
 {
-#if 0
+#if 1
+  std::cout << "Started program" << std::endl;
+  testMovie();
+  return 1;
+#elif 0
   //Mesh test(0.3f, 0.5f, 10, 10);
   //std::cout << "test mesh: " << test << std::endl;
   testWarping();

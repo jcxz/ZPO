@@ -19,19 +19,33 @@ UI_DIR = obj
 QMAKE_CXXFLAGS = -std=c++11 -Wall -Wextra -pedantic -g
 INCLUDEPATH += src
 
-SOURCES += \
-    src/main.cpp \
-    src/Mesh.cpp \
-    src/MeshWarpWidget.cpp \
-    src/MainWindow.cpp \
-    src/morph.cpp
+INCLUDEPATH += D:/AC601/ostatne/Programovanie/libraries/opencv/build/include
+LIBS += -L"${MY_LIB_PATH}/opencv/build/x86/mingw47/lib"
+LIBS += -lopencv_core248.dll
+LIBS += -lopencv_highgui248.dll
+LIBS += -lopencv_imgproc248.dll
+
 
 HEADERS += \
     src/Mesh.h \
     src/Point.h \
     src/MeshWarpWidget.h \
     src/MainWindow.h \
-    src/morph.h
+    src/morph.h \
+    src/Morpher.h \
+    src/debug.h \
+    src/Movie.h \
+    src/utils.h
+
+SOURCES += \
+    src/main.cpp \
+    src/Mesh.cpp \
+    src/MeshWarpWidget.cpp \
+    src/MainWindow.cpp \
+    src/morph.cpp \
+    src/Morpher.cpp \
+    src/Movie.cpp \
+    src/utils.cpp
 
 FORMS += \
     src/MainWindow.ui

@@ -130,7 +130,7 @@ class Mesh
   private:
     int m_width;                        /// the width that is represented by mesh
     int m_heigth;                       /// the heigth that is represented by mesh
-    int m_size_x;                       /// number of control in horizontal direction
+    int m_size_x;                       /// number of control points in horizontal direction
     int m_size_y;                       /// number of control points in vertical direction
     int m_size;                         /// the count of control points
     std::unique_ptr<Point[]> m_points;  /// and array of control points
