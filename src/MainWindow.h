@@ -19,6 +19,7 @@ class MainWindow : public QMainWindow
     void morph(void);
     void loadSourceImage(void);
     void loadDestinationImage(void);
+    void scaleImages(void);
 
   private:
     Ui::MainWindow *ui;

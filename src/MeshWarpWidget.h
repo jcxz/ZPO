@@ -2,10 +2,9 @@
 #define MESHWARPWIDGET_H
 
 #include "Mesh.h"
+#include "debug.h"
 
 #include <QWidget>
-#include <iostream>
-
 
 
 class MeshWarpWidget : public QWidget
@@ -26,16 +25,16 @@ class MeshWarpWidget : public QWidget
       , m_active_cp_x(0)
       , m_active_cp_y(0)
       , m_has_active_cp(false)
+      , m_transform()
       , m_orig_img()
       , m_img()
-      , m_transform()
       , m_orig_mesh()
       , m_mesh()
       , m_show_warped(false)
     {
-      std::cout << "Original mesh : " << m_orig_mesh << std::endl;
-      std::cout << "New mesh      : " << m_mesh << std::endl;
-      setFocusPolicy(Qt::StrongFocus);
+      DBGM("Original mesh : " << m_orig_mesh);
+      DBGM("New mesh      : " << m_mesh);
+      setFocusPolicy(Qt::StrongFocus);  // this is to make key's work
     }
 
     explicit MeshWarpWidget(const QImage & img, QWidget *parent = 0)
@@ -51,16 +50,16 @@ class MeshWarpWidget : public QWidget
       , m_active_cp_x(0)
       , m_active_cp_y(0)
       , m_has_active_cp(false)
+      , m_transform()
       , m_orig_img(img)
       , m_img(img)
-      , m_transform()
       , m_orig_mesh(0.01f, 0.01f, img.width(), img.height())
       , m_mesh(0.01f, 0.01f, img.width(), img.height())
       , m_show_warped(false)
     {
-      std::cout << "Original mesh : " << m_orig_mesh << std::endl;
-      std::cout << "New mesh      : " << m_mesh << std::endl;
-      setFocusPolicy(Qt::StrongFocus);
+      DBGM("Original mesh : " << m_orig_mesh);
+      DBGM("New mesh      : " << m_mesh);
+      setFocusPolicy(Qt::StrongFocus);  // this is to make key's work
     }
 
     const Mesh & mesh(void) const { return m_mesh; }
@@ -100,6 +99,7 @@ class MeshWarpWidget : public QWidget
 
   private:
     float m_scale;
+
     int m_origin_x;
     int m_origin_y;
     int m_vect_x;
@@ -107,14 +107,19 @@ class MeshWarpWidget : public QWidget
     int m_offset_x;
     int m_offset_y;
     bool m_panning;
+
     int m_active_cp_x;
     int m_active_cp_y;
     bool m_has_active_cp;
+
+    QTransform m_transform;
+
     QImage m_orig_img;
     QImage m_img;
-    QTransform m_transform;
+
     Mesh m_orig_mesh;
     Mesh m_mesh;
+
     bool m_show_warped;
 };
 

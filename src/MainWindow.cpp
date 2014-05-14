@@ -14,8 +14,8 @@ MainWindow::MainWindow(QWidget *parent)
 {
   ui->setupUi(this);
   //ui->widget->setStyleSheet("background-color: red;");
-  ui->srcWarp->setImage("D:\\AC601\\obrazky\\PasoveFoto\\orezane.jpg");
-  ui->dstWarp->setImage("D:\\AC601\\obrazky\\Katka.png");
+  //ui->srcWarp->setImage("D:\\AC601\\obrazky\\PasoveFoto\\orezane.jpg");
+  //ui->dstWarp->setImage("D:\\AC601\\obrazky\\Katka.png");
   //ui->dstWarp->setImage("D:\\AC601\\obrazky\\Fun\\cow_costume.jpg");
   //ui->srcWarp->setImage("data/Man.jpg");
   //ui->dstWarp->setImage("data/Woman.jpg");
@@ -62,20 +62,67 @@ void MainWindow::loadSourceImage(void)
   QString filename(QFileDialog::getOpenFileName(this, tr("Source image")));
   if (filename.isNull()) return;
 
-  if (!ui->srcWarp->setImage(filename))
+  QImage img(filename);
+  if (img.isNull())
   {
     QMessageBox::critical(this, tr("Error"), tr("Failed to load the image"));
+    return;
   }
+
+  ui->srcWarp->setImage(img);
+  ui->sbSrcWidth->setValue(img.width());
+  ui->sbSrcHeigth->setValue(img.height());
 }
 
 
 void MainWindow::loadDestinationImage(void)
 {
-  QString filename(QFileDialog::getOpenFileName(this, tr("Destination image")));
+  QString filename(QFileDialog::getOpenFileName(this, tr("Source image")));
   if (filename.isNull()) return;
 
-  if (!ui->dstWarp->setImage(filename))
+  QImage img(filename);
+  if (img.isNull())
   {
     QMessageBox::critical(this, tr("Error"), tr("Failed to load the image"));
+    return;
   }
+
+  ui->dstWarp->setImage(img);
+  ui->sbDstWidth->setValue(img.width());
+  ui->sbDstHeigth->setValue(img.height());
+}
+
+
+void MainWindow::scaleImages(void)
+{
+  const QImage & src = ui->srcWarp->image();
+  const QImage & dst = ui->dstWarp->image();
+
+  int src_w = ui->sbSrcWidth->value();
+  int src_h = ui->sbSrcHeigth->value();
+  int dst_w = ui->sbDstWidth->value();
+  int dst_h = ui->sbDstHeigth->value();
+
+  if (ui->rbCustom->isChecked())
+  {
+    if ((src_w != dst_w) || (src_h != dst_h))
+    {
+      QMessageBox::warning(this, tr("Error"),
+                           tr("The width or the heigth of the destination and the source image do not agree"));
+      return;
+    }
+  }
+  else
+  {
+    src_w = (src_w + dst_w) / 2;
+    src_h = (src_h + dst_h) / 2;
+  }
+
+  ui->srcWarp->setImage(src.scaled(src_w, src_h));
+  ui->dstWarp->setImage(dst.scaled(src_w, src_h));
+
+  ui->sbSrcWidth->setValue(src_w);
+  ui->sbSrcHeigth->setValue(src_h);
+  ui->sbDstWidth->setValue(src_w);
+  ui->sbDstHeigth->setValue(src_h);
 }
