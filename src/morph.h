@@ -17,9 +17,11 @@ void morph(const QImage & src_img, const Mesh & src_mesh,
            const QImage & dst_img, const Mesh & dst_mesh,
            int nframes);
 
+#if 0
 Movie *morphMovie(const QImage & src_img, const Mesh & src_mesh,
                   const QImage & dst_img, const Mesh & dst_mesh,
                   int nframes);
+#endif
 
 bool loadMorphProject(const QString & filename,
                       QImage & src_img, Mesh & src_mesh,

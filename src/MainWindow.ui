@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>808</width>
-    <height>556</height>
+    <height>602</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -204,6 +204,15 @@
         </item>
         <item>
          <widget class="QSlider" name="sliderDensity">
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="maximum">
+           <number>50</number>
+          </property>
+          <property name="value">
+           <number>10</number>
+          </property>
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
@@ -226,7 +235,7 @@
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="0,1">
           <item>
            <widget class="QLabel" name="label_5">
             <property name="text">
@@ -280,6 +289,9 @@
    <extends>QWidget</extends>
    <header>MeshWarpWidget.h</header>
    <container>1</container>
+   <slots>
+    <slot>handleMeshDensityChange(int)</slot>
+   </slots>
   </customwidget>
  </customwidgets>
  <resources/>
@@ -409,6 +421,38 @@
     <hint type="destinationlabel">
      <x>403</x>
      <y>277</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>sliderDensity</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>srcWarp</receiver>
+   <slot>handleMeshDensityChange(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>699</x>
+     <y>459</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>151</x>
+     <y>300</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>sliderDensity</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>dstWarp</receiver>
+   <slot>handleMeshDensityChange(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>699</x>
+     <y>459</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>443</x>
+     <y>300</y>
     </hint>
    </hints>
   </connection>

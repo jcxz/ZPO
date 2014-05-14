@@ -5,7 +5,8 @@
 
 
 namespace Ui { class MainWindow; }
-
+class Movie;
+class Mesh;
 
 class MainWindow : public QMainWindow
 {
@@ -22,6 +23,11 @@ class MainWindow : public QMainWindow
     void loadSourceImage(void);
     void loadDestinationImage(void);
     void scaleImages(void);
+
+  private:
+    Movie *morphMovie(const QImage & src_img, const Mesh & src_mesh,
+                      const QImage & dst_img, const Mesh & dst_mesh,
+                      int nframes);
 
   private:
     Ui::MainWindow *ui;

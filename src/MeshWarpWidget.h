@@ -63,6 +63,12 @@ class MeshWarpWidget : public QWidget
       setFocusPolicy(Qt::StrongFocus);  // this is to make key's work
     }
 
+    bool isEmpty(void) const
+    {
+      return m_img.isNull() || m_mesh.isEmpty() ||
+          m_orig_img.isNull() || m_orig_mesh.isEmpty();
+    }
+
     const Mesh & mesh(void) const { return m_mesh; }
     const QImage & image(void) const { return m_img; }
 
@@ -80,6 +86,7 @@ class MeshWarpWidget : public QWidget
   private slots:
     void handleCPChange(int x, int y);
     void handleCPDeactivation(void);
+    void handleMeshDensityChange(int density);
 
   signals:
     void activeCPChanged(int x, int y);

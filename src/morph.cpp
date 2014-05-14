@@ -400,6 +400,7 @@ void morph(const QImage & src_img, const Mesh & src_mesh,
 }
 
 
+#if 0
 Movie *morphMovie(const QImage & src_img, const Mesh & src_mesh,
                   const QImage & dst_img, const Mesh & dst_mesh,
                   int nframes)
@@ -429,6 +430,7 @@ Movie *morphMovie(const QImage & src_img, const Mesh & src_mesh,
 
   return movie;
 }
+#endif
 
 
 ////////////////////////////////////// Morph project functions /////////////////////////////////////////////////////////

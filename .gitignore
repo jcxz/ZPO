@@ -24,6 +24,8 @@ ui_*.h
 ZPO.exe
 
 # ignore debug and release directories
+/odovzdanie
+/odovzdanie/*
 /output
 /output/*
 /obj

@@ -180,7 +180,6 @@ int main(int argc, char *argv[])
   QApplication app(argc, argv);
   MainWindow w;
 
-  /* load stylesheet */
   QFile style_sheet(":/style.qss");
   if (!style_sheet.open(QFile::ReadOnly))
   {
@@ -191,8 +190,8 @@ int main(int argc, char *argv[])
 
   app.setStyleSheet(style_sheet.readAll());
 
-  //w.show();
-  w.showMaximized();
+  w.show();
+  //w.showMaximized();
 
   return app.exec();
 #endif

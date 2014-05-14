@@ -8,6 +8,7 @@
 
 
 static constexpr int CONTROL_POINT_SIZE = 8;//6;
+static constexpr float DEFAULT_DENSITY = 0.01f;
 
 
 
@@ -23,8 +24,10 @@ bool MeshWarpWidget::setImage(const QImage & img)
   resetTransformations();
   m_panning = false;
 
-  m_orig_mesh.resize(0.01f, 0.01f, img.width(), img.height());
-  m_mesh.resize(0.01f, 0.01f, img.width(), img.height());
+  m_orig_mesh.resize(DEFAULT_DENSITY, DEFAULT_DENSITY, img.width(), img.height());
+  m_mesh.resize(DEFAULT_DENSITY, DEFAULT_DENSITY, img.width(), img.height());
+
+  update();
 
   return true;
 }
@@ -55,6 +58,8 @@ void MeshWarpWidget::set(QImage & img, Mesh & mesh)
 
   m_mesh = std::move(mesh);
   m_orig_mesh.resize(m_mesh.sizeX(), m_mesh.sizeY(), img.width(), img.height());
+
+  update();
 }
 
 
@@ -70,6 +75,20 @@ void MeshWarpWidget::handleCPChange(int x, int y)
 void MeshWarpWidget::handleCPDeactivation(void)
 {
   m_has_active_cp = false;
+  update();
+}
+
+
+void MeshWarpWidget::handleMeshDensityChange(int density)
+{
+  if (density > 50) density = 50;
+  if (density < 1)   density = 1;
+
+  float densf = float(density) / 1000.0f;
+
+  m_mesh.resize(densf, m_img.width(), m_img.height());
+  m_orig_mesh.resize(densf, m_orig_img.width(), m_orig_img.height());
+
   update();
 }
 

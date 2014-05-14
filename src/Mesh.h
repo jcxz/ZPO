@@ -72,6 +72,7 @@ class Mesh
     }
 
     // getter functions
+    bool isEmpty(void) const { return (m_points.get() == nullptr) || (m_size == 0); }
     int width(void) const { return m_width; }
     int heigth(void) const { return m_heigth; }
     int pointCount(void) const { return m_size; }

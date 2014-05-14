@@ -2,6 +2,7 @@
 #include "ui_MainWindow.h"
 #include "morph.h"
 #include "MoviePlayerWindow.h"
+#include "Movie.h"
 
 #include <QFileDialog>
 #include <QMessageBox>
@@ -31,6 +32,8 @@ MainWindow::MainWindow(QWidget *parent)
           ui->srcWarp, SLOT(handleCPChange(int,int)));
   connect(ui->dstWarp, SIGNAL(activeCPDeactivated()),
           ui->srcWarp, SLOT(handleCPDeactivation()));
+
+  ui->progressBar->hide();
 }
 
 
@@ -46,14 +49,76 @@ void MainWindow::morph(void)
   //      ui->dstWarp->image(), ui->dstWarp->mesh(),
   //      100);
 
-  Movie *movie = morphMovie(ui->srcWarp->image(), ui->srcWarp->mesh(),
-                            ui->dstWarp->image(), ui->dstWarp->mesh(),
+  if ((ui->srcWarp->isEmpty()) || (ui->dstWarp->isEmpty()))
+  {
+    QMessageBox::warning(this, tr("Error"), tr("Nothing to be morphed"));
+    return;
+  }
+
+  if (ui->srcWarp->image().size() != ui->dstWarp->image().size())
+  {
+    QMessageBox::warning(this, tr("Error"),
+                         tr("Images to be morphed do not have equal dimensions."
+                            "Use the scale button to make their sizes equal."));
+    return;
+  }
+
+  //Movie *movie = morphMovie(ui->srcWarp->image(), ui->srcWarp->mesh(),
+  //                          ui->dstWarp->image(), ui->dstWarp->mesh(),
+  //                          ui->sbFrameCount->value());
+
+  Movie *movie = morphMovie(ui->dstWarp->image(), ui->dstWarp->mesh(),
+                            ui->srcWarp->image(), ui->srcWarp->mesh(),
                             ui->sbFrameCount->value());
+  if (movie == nullptr)
+  {
+    QMessageBox::critical(this, tr("Error"),
+                         tr("Failed to morph images"));
+    return;
+  }
 
   MoviePlayerWindow *player = new MoviePlayerWindow(movie);
   player->setAttribute(Qt::WA_DeleteOnClose);
   player->activateWindow();  // this brings the window to front
   player->show();
+}
+
+
+Movie *MainWindow::morphMovie(const QImage & src_img, const Mesh & src_mesh,
+                              const QImage & dst_img, const Mesh & dst_mesh,
+                              int nframes)
+{
+  if (!src_mesh.hasSameDimensions(dst_mesh))
+  {
+    ERRORM("source mesh has different dimensions than destination mesh");
+    return nullptr;
+  }
+
+  Mesh tmp_mesh(src_mesh.sizeX(), src_mesh.sizeY(), src_mesh.width(), src_mesh.heigth());
+
+  Movie *movie = new Movie;
+
+  ui->progressBar->setMaximum(nframes);
+  ui->progressBar->show();
+
+  for (int i = 0; i < nframes; ++i)
+  {
+    float t = float(i) / (float(nframes - 1));
+
+    QImage frame(morphFrame(src_img, src_mesh, dst_img, dst_mesh, tmp_mesh, t));
+    if (frame.isNull())
+    {
+      WARNM("Failed to morph frame n. " << i);
+    }
+
+    movie->addFrame(frame);
+
+    ui->progressBar->setValue(i);
+  }
+
+  ui->progressBar->hide();
+
+  return movie;
 }
 
 
@@ -74,6 +139,11 @@ void MainWindow::loadProject(void)
 
   ui->srcWarp->set(src_img, src_mesh);
   ui->dstWarp->set(dst_img, dst_mesh);
+
+  ui->sbSrcWidth->setValue(src_img.width());
+  ui->sbSrcHeigth->setValue(src_img.height());
+  ui->sbDstWidth->setValue(dst_img.width());
+  ui->sbDstHeigth->setValue(dst_img.height());
 }
 
 
