@@ -14,6 +14,7 @@ OBJECTS_DIR = obj
 MOC_DIR = obj
 RCC_DIR = obj
 UI_DIR = obj
+DESTDIR = ./
 
 
 QMAKE_CXXFLAGS = -std=c++11 -Wall -Wextra -pedantic -g
@@ -35,7 +36,8 @@ HEADERS += \
     src/Morpher.h \
     src/debug.h \
     src/Movie.h \
-    src/utils.h
+    src/utils.h \
+    src/MoviePlayerWindow.h
 
 SOURCES += \
     src/main.cpp \
@@ -45,8 +47,9 @@ SOURCES += \
     src/morph.cpp \
     src/Morpher.cpp \
     src/Movie.cpp \
-    src/utils.cpp
+    src/utils.cpp \
+    src/MoviePlayerWindow.cpp
 
 FORMS += \
-    src/MainWindow.ui
-
+    src/MainWindow.ui \
+    src/MoviePlayerWindow.ui

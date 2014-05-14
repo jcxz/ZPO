@@ -4,6 +4,7 @@
 #include "Movie.h"
 #include "MeshWarpWidget.h"
 #include "MainWindow.h"
+#include "MoviePlayerWindow.h"
 #include "utils.h"
 
 #include <QApplication>
@@ -73,6 +74,42 @@ static bool testWarping(void)
 }
 
 
+void genMovie(int frame_w, int frame_h, QImage::Format frame_fmt,
+              int frames_count, Movie & movie, bool save_frames = false)
+{
+  INFOM("Generating frames ...");
+
+  int argc = 0;
+  char **argv = nullptr;
+  //QGuiApplication app(argc, argv);
+  QPainter painter;
+  for (int i = 0; i < frames_count; ++i)
+  {
+    QImage frame(frame_w, frame_h, frame_fmt);
+
+    frame.fill(Qt::red);
+
+    painter.begin(&frame);
+    painter.drawText(10, 30, QString("frame #%1").arg(i));
+    painter.end();
+
+    if (save_frames)
+    {
+      QString frame_filename(QString("output/testMovie/generated_%1.jpg").arg(i));
+      if (!frame.save(frame_filename))
+      {
+        WARNM("Failed to save generated frame #" << i <<
+              " to " << frame_filename.toStdString());
+      }
+    }
+
+    movie.addFrame(frame);
+  }
+
+  INFOM("Frames generated");
+}
+
+
 static bool testMovie(void)
 {
   constexpr int frame_w = 100;
@@ -81,35 +118,7 @@ static bool testMovie(void)
 
   Movie movie;
 
-  {
-    INFOM("Generating frames ...");
-
-    int argc = 0;
-    char **argv = nullptr;
-    QGuiApplication app(argc, argv);
-    QPainter painter;
-    for (int i = 0; i < 100; ++i)
-    {
-      QImage frame(frame_w, frame_h, frame_fmt);
-
-      frame.fill(Qt::red);
-
-      painter.begin(&frame);
-      painter.drawText(10, 30, QString("frame #%1").arg(i));
-      painter.end();
-
-      QString frame_filename(QString("output/testMovie/generated_%1.jpg").arg(i));
-      if (!frame.save(frame_filename))
-      {
-        WARNM("Failed to save generated frame #" << i <<
-              " to " << frame_filename.toStdString());
-      }
-
-      movie.addFrame(frame);
-    }
-
-    INFOM("Frames generated");
-  }
+  genMovie(frame_w, frame_h, frame_fmt, 100, movie, true);
 
   INFOM("Saving as AVI");
 
@@ -128,8 +137,7 @@ static bool testMovie(void)
 
 int main(int argc, char *argv[])
 {
-#if 1
-  std::cout << "Started program" << std::endl;
+#if 0
   testMovie();
   return 1;
 #elif 0
@@ -151,6 +159,19 @@ int main(int argc, char *argv[])
   MeshWarpWidget w(img);
 
   w.show();
+
+  return app.exec();
+#elif 1
+  QApplication app(argc, argv);
+
+  MoviePlayerWindow player;
+
+  Movie *movie = new Movie;
+  genMovie(300, 300, QImage::Format_ARGB32, 100, *movie);
+
+  player.setMovie(movie);
+
+  player.show();
 
   return app.exec();
 #else

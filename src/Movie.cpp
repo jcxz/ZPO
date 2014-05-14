@@ -130,7 +130,7 @@ bool Movie::saveAsImageSequence(const std::string & filename) const
 
   for (int i = 0; i < m_frames.size(); ++i)
   {
-    if (!m_frames[i].save(name))
+    if (!m_frames[i].save(name.arg(i)))
     {
       WARNM("Failed to save frame #" << i << " to file " << name.toStdString());
       ret = false;

@@ -1,7 +1,7 @@
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
 #include "morph.h"
-
+#include "MoviePlayerWindow.h"
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -25,7 +25,11 @@ MainWindow::~MainWindow(void)
 
 void MainWindow::on_pushButton_clicked()
 {
-  morph(ui->srcWarp->image(), ui->srcWarp->mesh(),
-        ui->dstWarp->image(), ui->dstWarp->mesh(),
-        100);
+  //morph(ui->srcWarp->image(), ui->srcWarp->mesh(),
+  //      ui->dstWarp->image(), ui->dstWarp->mesh(),
+  //      100);
+
+  MoviePlayerWindow *player = new MoviePlayerWindow;
+  player->setAttribute(Qt::WA_DeleteOnClose);
+  player->show();
 }

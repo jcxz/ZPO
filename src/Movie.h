@@ -37,6 +37,7 @@ class Movie
     int frameCount(void) const { return m_frames.size(); }
     int frameWidth(void) const { return m_frame_w; }
     int frameHeigth(void) const { return m_frame_h; }
+    const QImage & frame(int idx) { return m_frames[idx]; }
 
     bool addFrame(const QImage & frame)
     {

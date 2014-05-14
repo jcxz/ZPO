@@ -20,6 +20,9 @@ object_script.ZPO.Release
 # ignore generated ui headers
 ui_*.h
 
+# ignore compiled binary
+ZPO.exe
+
 # ignore debug and release directories
 /output
 /output/*
