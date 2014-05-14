@@ -17,6 +17,8 @@ class MainWindow : public QMainWindow
     
   private slots:
     void morph(void);
+    void loadProject(void);
+    void saveProject(void);
     void loadSourceImage(void);
     void loadDestinationImage(void);
     void scaleImages(void);

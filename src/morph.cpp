@@ -4,14 +4,11 @@
 #include "debug.h"
 #include "Movie.h"
 
-//#include <iostream>
-//#include <iomanip>
 #include <memory>
 #include <vector>
-//#include <cassert>
+#include <QFile>
+#include <QDataStream>
 
-//#include <QImage>
-//#include <QDebug>
 
 
 ///////////////////////////////////// Debugging Functions ///////////////////////////////////////////////
@@ -431,4 +428,51 @@ Movie *morphMovie(const QImage & src_img, const Mesh & src_mesh,
   }
 
   return movie;
+}
+
+
+////////////////////////////////////// Morph project functions /////////////////////////////////////////////////////////
+
+
+bool loadMorphProject(const QString & filename,
+                      QImage & src_img, Mesh & src_mesh,
+                      QImage & dst_img, Mesh & dst_mesh)
+{
+  QFile file(filename);
+  if (!file.open(QIODevice::ReadOnly))
+  {
+    ERRORM("Failed to open file " << filename.toStdString());
+    return false;
+  }
+
+  QDataStream stream(&file);
+
+  stream >> src_img;
+  stream >> src_mesh;
+  stream >> dst_img;
+  stream >> dst_mesh;
+
+  return stream.status() == QDataStream::Ok;
+}
+
+
+bool saveMorphProject(const QString & filename,
+                      const QImage & src_img, const Mesh & src_mesh,
+                      const QImage & dst_img, const Mesh & dst_mesh)
+{
+  QFile file(filename);
+  if (!file.open(QIODevice::WriteOnly))
+  {
+    ERRORM("Failed to create output stream");
+    return false;
+  }
+
+  QDataStream stream(&file);
+
+  stream << src_img;
+  stream << src_mesh;
+  stream << dst_img;
+  stream << dst_mesh;
+
+  return stream.status() == QDataStream::Ok;
 }

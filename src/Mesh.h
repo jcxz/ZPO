@@ -7,6 +7,9 @@
 #include <ostream>
 
 
+class QDataStream;
+
+
 class Mesh
 {
   public:
@@ -45,6 +48,28 @@ class Mesh
       , m_size(mesh_w * mesh_h)
       , m_points(new Point[m_size])
     { if (recalc) resample(); }
+
+    Mesh(Mesh && other) noexcept
+      : m_width(other.m_width)
+      , m_heigth(other.m_heigth)
+      , m_size_x(other.m_size_x)
+      , m_size_y(other.m_size_y)
+      , m_size(other.m_size)
+      , m_points(nullptr)
+    {
+      m_points.swap(other.m_points);
+    }
+
+    Mesh & operator=(Mesh && other) noexcept
+    {
+      m_width = other.m_width;
+      m_heigth = other.m_heigth;
+      m_size_x = other.m_size_x;
+      m_size_y = other.m_size_y;
+      m_size = other.m_size;
+      m_points.swap(other.m_points);
+      return *this;
+    }
 
     // getter functions
     int width(void) const { return m_width; }
@@ -122,6 +147,10 @@ class Mesh
 
     // debugging functions
     friend std::ostream & operator<<(std::ostream & os, const Mesh & mesh);
+
+    // serialization functions
+    friend QDataStream & operator<<(QDataStream & stream, const Mesh & mesh);  // output
+    friend QDataStream & operator>>(QDataStream & stream, Mesh & mesh);        // input
 
 
   private:

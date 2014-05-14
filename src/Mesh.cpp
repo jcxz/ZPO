@@ -1,9 +1,11 @@
 #include "Mesh.h"
+#include "debug.h"
 
 #include <iostream>
 #include <iomanip>
 #include <cstring>
 #include <cassert>
+#include <QDataStream>
 
 
 
@@ -309,4 +311,61 @@ std::ostream & operator<<(std::ostream & os, const Mesh & mesh)
   }
 
   return os;
+}
+
+
+QDataStream & operator<<(QDataStream & stream, const Mesh & mesh)
+{
+  stream << mesh.m_width;
+  stream << mesh.m_heigth;
+  stream << mesh.m_size_x;
+  stream << mesh.m_size_y;
+  stream << mesh.m_size;
+
+  const Point * __restrict__ p_data = mesh.data();
+  for (int i = 0; i < mesh.m_size; ++i)
+  {
+    stream << p_data->x;
+    stream << p_data->y;
+    ++p_data;
+  }
+
+  return stream;
+}
+
+
+QDataStream & operator>>(QDataStream & stream, Mesh & mesh)
+{
+  stream >> mesh.m_width;
+  stream >> mesh.m_heigth;
+  stream >> mesh.m_size_x;
+  stream >> mesh.m_size_y;
+  stream >> mesh.m_size;
+
+  if (stream.status() != QDataStream::Ok)
+  {
+    ERRORM("Error while reading mesh header from the stream");
+    return stream;
+  }
+
+  if ((mesh.m_width < 0) || (mesh.m_heigth < 0) ||
+      (mesh.m_size_x < 0) || (mesh.m_size_y < 0) ||
+      (mesh.m_size < 0))
+  {
+    ERRORM("The size of the mesh or its width or heigth is negative");
+    stream.setStatus(QDataStream::ReadCorruptData);
+    return stream;
+  }
+
+  mesh.m_points.reset(new Point[mesh.m_size]);
+
+  Point * __restrict__ p_data = mesh.data();
+  for (int i = 0; i < mesh.m_size; ++i)
+  {
+    stream >> p_data->x;
+    stream >> p_data->y;
+    ++p_data;
+  }
+
+  return stream;
 }

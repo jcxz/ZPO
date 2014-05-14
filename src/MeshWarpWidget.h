@@ -2,6 +2,7 @@
 #define MESHWARPWIDGET_H
 
 #include "Mesh.h"
+#include "morph.h"
 #include "debug.h"
 
 #include <QWidget>
@@ -67,6 +68,8 @@ class MeshWarpWidget : public QWidget
 
     bool setImage(const QImage & img);
     bool setImage(const QString & filename);
+
+    void set(QImage & img, Mesh & mesh);
 
     void toggleShowWarped(void)
     {

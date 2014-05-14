@@ -48,12 +48,47 @@ void MainWindow::morph(void)
 
   Movie *movie = morphMovie(ui->srcWarp->image(), ui->srcWarp->mesh(),
                             ui->dstWarp->image(), ui->dstWarp->mesh(),
-                            100);
+                            ui->sbFrameCount->value());
 
   MoviePlayerWindow *player = new MoviePlayerWindow(movie);
   player->setAttribute(Qt::WA_DeleteOnClose);
   player->activateWindow();  // this brings the window to front
   player->show();
+}
+
+
+void MainWindow::loadProject(void)
+{
+  QString filename(QFileDialog::getOpenFileName(this, tr("Morph project")));
+  if (filename.isNull()) return;
+
+  QImage src_img;
+  QImage dst_img;
+  Mesh src_mesh;
+  Mesh dst_mesh;
+
+  if (!loadMorphProject(filename, src_img, src_mesh, dst_img, dst_mesh))
+  {
+    QMessageBox::critical(this, tr("Error"), tr("Failed to load the morph project"));
+  }
+
+  ui->srcWarp->set(src_img, src_mesh);
+  ui->dstWarp->set(dst_img, dst_mesh);
+}
+
+
+void MainWindow::saveProject(void)
+{
+  QString filename(QFileDialog::getSaveFileName(this, tr("Morph project"),
+                                                "./project.morph",
+                                                tr("Morph Files (*.morph);;All Files (*.*)")));
+  if (filename.isNull()) return;
+
+  if (!saveMorphProject(filename, ui->srcWarp->image(), ui->srcWarp->mesh(),
+                        ui->dstWarp->image(), ui->dstWarp->mesh()))
+  {
+    QMessageBox::critical(this, tr("Error"), tr("Failed to load the morph project"));
+  }
 }
 
 

@@ -18,9 +18,14 @@ bool MeshWarpWidget::setImage(const QImage & img)
   m_has_active_cp = false;
   m_orig_img = img;
   m_img = img;
-  m_transform = QTransform();
+
+  //m_transform = QTransform();
+  resetTransformations();
+  m_panning = false;
+
   m_orig_mesh.resize(0.01f, 0.01f, img.width(), img.height());
   m_mesh.resize(0.01f, 0.01f, img.width(), img.height());
+
   return true;
 }
 
@@ -34,6 +39,22 @@ bool MeshWarpWidget::setImage(const QString & filename)
     return false;
   }
   return setImage(img);
+}
+
+
+void MeshWarpWidget::set(QImage & img, Mesh & mesh)
+{
+  m_active_cp_x = 0;
+  m_active_cp_y = 0;
+  m_has_active_cp = false;
+  m_orig_img = img;
+  m_img = img;
+
+  resetTransformations();
+  m_panning = false;
+
+  m_mesh = std::move(mesh);
+  m_orig_mesh.resize(m_mesh.sizeX(), m_mesh.sizeY(), img.width(), img.height());
 }
 
 
