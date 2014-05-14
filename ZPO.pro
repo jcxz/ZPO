@@ -4,6 +4,10 @@
 #
 #-------------------------------------------------
 
+# Setup helper variables
+SRC_ROOT = ./src
+RES_ROOT = ./res
+
 QT += core gui
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -53,3 +57,36 @@ SOURCES += \
 FORMS += \
     src/MainWindow.ui \
     src/MoviePlayerWindow.ui
+
+# Resources that shall be compiled into the binary
+RESOURCES += \
+  $${RES_ROOT}/res.qrc
+
+# Other files (resource icons, stylesheets)
+OTHER_FILES += \
+  $${RES_ROOT}/style.qss \
+  $${RES_ROOT}/style_windows.qss \
+  $${RES_ROOT}/qss_icons/rc/Hmovetoolbar.png \
+  $${RES_ROOT}/qss_icons/rc/checkbox.png \
+  $${RES_ROOT}/qss_icons/rc/sizegrip.png \
+  $${RES_ROOT}/qss_icons/rc/Hsepartoolbar.png \
+  $${RES_ROOT}/qss_icons/rc/close.png \
+  $${RES_ROOT}/qss_icons/rc/stylesheet-branch-end.png \
+  $${RES_ROOT}/qss_icons/rc/Vmovetoolbar.png \
+  $${RES_ROOT}/qss_icons/rc/down_arrow.png \
+  $${RES_ROOT}/qss_icons/rc/stylesheet-branch-more.png \
+  $${RES_ROOT}/qss_icons/rc/Vsepartoolbar.png \
+  $${RES_ROOT}/qss_icons/rc/down_arrow_disabled.png \
+  $${RES_ROOT}/qss_icons/rc/stylesheet-vline.png \
+  $${RES_ROOT}/qss_icons/rc/branch_closed-on.png \
+  $${RES_ROOT}/qss_icons/rc/left_arrow.png \
+  $${RES_ROOT}/qss_icons/rc/transparent.png \
+  $${RES_ROOT}/qss_icons/rc/branch_closed.png \
+  $${RES_ROOT}/qss_icons/rc/left_arrow_disabled.png \
+  $${RES_ROOT}/qss_icons/rc/undock.png \
+  $${RES_ROOT}/qss_icons/rc/branch_open-on.png \
+  $${RES_ROOT}/qss_icons/rc/right_arrow.png \
+  $${RES_ROOT}/qss_icons/rc/up_arrow.png \
+  $${RES_ROOT}/qss_icons/rc/branch_open.png \
+  $${RES_ROOT}/qss_icons/rc/right_arrow_disabled.png \
+  $${RES_ROOT}/qss_icons/rc/up_arrow_disabled.png

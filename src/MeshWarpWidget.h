@@ -24,6 +24,7 @@ class MeshWarpWidget : public QWidget
       , m_transform()
       , m_orig_mesh()
       , m_mesh()
+      , m_show_warped(false)
     {
       std::cout << "Original mesh : " << m_orig_mesh << std::endl;
       std::cout << "New mesh      : " << m_mesh << std::endl;
@@ -40,6 +41,7 @@ class MeshWarpWidget : public QWidget
       , m_transform()
       , m_orig_mesh(0.01f, 0.01f, img.width(), img.height())
       , m_mesh(0.01f, 0.01f, img.width(), img.height())
+      , m_show_warped(false)
     {
       std::cout << "Original mesh : " << m_orig_mesh << std::endl;
       std::cout << "New mesh      : " << m_mesh << std::endl;
@@ -51,6 +53,20 @@ class MeshWarpWidget : public QWidget
     bool setImage(const QImage & img);
     bool setImage(const QString & filename);
 
+    void toggleShowWarped(void)
+    {
+      m_show_warped = !m_show_warped;
+      if (m_show_warped) m_img = m_orig_img;
+    }
+
+  private slots:
+    void handleCPChange(int x, int y);
+    void handleCPDeactivation(void);
+
+  signals:
+    void activeCPChanged(int x, int y);
+    void activeCPDeactivated(void);
+
   protected:
     virtual void paintEvent(QPaintEvent *event) override;
     virtual void mouseMoveEvent(QMouseEvent *event) override;
@@ -58,7 +74,10 @@ class MeshWarpWidget : public QWidget
     virtual void mouseReleaseEvent(QMouseEvent *event) override;
 
   private:
-    void drawMesh(QPainter & painter);
+    //void drawMesh(QPainter & painter);
+    //void drawActiveCP(QPainter & painter);
+
+    QImage drawMesh(void);
 
   private:
     //Point *m_active_cp;   // the currently active control point
@@ -70,6 +89,7 @@ class MeshWarpWidget : public QWidget
     QTransform m_transform;
     Mesh m_orig_mesh;
     Mesh m_mesh;
+    bool m_show_warped;
 };
 
 #endif // MESHWARPWIDGET_H

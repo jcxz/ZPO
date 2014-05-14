@@ -18,6 +18,9 @@ class MainWindow : public QMainWindow
   private slots:
     void on_pushButton_clicked();
 
+    void loadSourceImage(void);
+    void loadDestinationImage(void);
+
   private:
     Ui::MainWindow *ui;
 };

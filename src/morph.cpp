@@ -1,15 +1,17 @@
 #include "morph.h"
 #include "Point.h"
 #include "Mesh.h"
+#include "debug.h"
+#include "Movie.h"
 
-#include <iostream>
-#include <iomanip>
+//#include <iostream>
+//#include <iomanip>
 #include <memory>
 #include <vector>
-#include <cassert>
+//#include <cassert>
 
-#include <QImage>
-#include <QDebug>
+//#include <QImage>
+//#include <QDebug>
 
 
 ///////////////////////////////////// Debugging Functions ///////////////////////////////////////////////
@@ -398,4 +400,35 @@ void morph(const QImage & src_img, const Mesh & src_mesh,
       std::cerr << "WARNING: Failed to save frame n. " << i << std::endl;
     }
   }
+}
+
+
+Movie *morphMovie(const QImage & src_img, const Mesh & src_mesh,
+                  const QImage & dst_img, const Mesh & dst_mesh,
+                  int nframes)
+{
+  if (!src_mesh.hasSameDimensions(dst_mesh))
+  {
+    ERRORM("source mesh has different dimensions than destination mesh");
+    return nullptr;
+  }
+
+  Mesh tmp_mesh(src_mesh.sizeX(), src_mesh.sizeY(), src_mesh.width(), src_mesh.heigth());
+
+  Movie *movie = new Movie;
+
+  for (int i = 0; i < nframes; ++i)
+  {
+    float t = float(i) / (float(nframes - 1));
+
+    QImage frame(morphFrame(src_img, src_mesh, dst_img, dst_mesh, tmp_mesh, t));
+    if (frame.isNull())
+    {
+      WARNM("Failed to morph frame n. " << i);
+    }
+
+    movie->addFrame(frame);
+  }
+
+  return movie;
 }

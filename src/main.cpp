@@ -8,6 +8,8 @@
 #include "utils.h"
 
 #include <QApplication>
+#include <QMessageBox>
+#include <QFile>
 #include <QImage>
 #include <QPainter>
 #include <iostream>
@@ -81,7 +83,7 @@ void genMovie(int frame_w, int frame_h, QImage::Format frame_fmt,
 
   int argc = 0;
   char **argv = nullptr;
-  //QGuiApplication app(argc, argv);
+  QGuiApplication app(argc, argv);
   QPainter painter;
   for (int i = 0; i < frames_count; ++i)
   {
@@ -161,7 +163,7 @@ int main(int argc, char *argv[])
   w.show();
 
   return app.exec();
-#elif 1
+#elif 0
   QApplication app(argc, argv);
 
   MoviePlayerWindow player;
@@ -178,7 +180,19 @@ int main(int argc, char *argv[])
   QApplication app(argc, argv);
   MainWindow w;
 
-  w.show();
+  /* load stylesheet */
+  QFile style_sheet(":/style.qss");
+  if (!style_sheet.open(QFile::ReadOnly))
+  {
+    QMessageBox::critical(nullptr, QObject::tr("Error"),
+                          QObject::tr("Failed to load stylesheet."));
+    return 1;
+  }
+
+  app.setStyleSheet(style_sheet.readAll());
+
+  //w.show();
+  w.showMaximized();
 
   return app.exec();
 #endif
