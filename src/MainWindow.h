@@ -16,8 +16,7 @@ class MainWindow : public QMainWindow
     ~MainWindow(void);
     
   private slots:
-    void on_pushButton_clicked();
-
+    void morph(void);
     void loadSourceImage(void);
     void loadDestinationImage(void);
 

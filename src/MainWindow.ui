@@ -169,9 +169,26 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>pbMorph</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>morph()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>688</x>
+     <y>60</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>381</x>
+     <y>273</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>loadSourceImage()</slot>
   <slot>loadDestinationImage()</slot>
+  <slot>morph()</slot>
  </slots>
 </ui>

@@ -219,10 +219,17 @@ QImage MeshWarpWidget::drawMesh(void)
 
 void MeshWarpWidget::paintEvent(QPaintEvent *event)
 {
+  /*
   m_transform = QTransform();
-  float x = (width() - m_img.width()) * 0.5f;
-  float y = (height() - m_img.height()) * 0.5f;
+  float x = (width() - m_img.width()) * 0.5f + m_offset_x;
+  float y = (height() - m_img.height()) * 0.5f + m_offset_y;
   m_transform.translate(x, y);
+  */
+
+  //m_transform = QTransform(1.0f, 0.0f, 0.0f, 1.0f,
+  m_transform = QTransform(m_scale, 0.0f, 0.0f, m_scale,
+                           (width() - m_img.width()) * 0.5f + m_offset_x,
+                           (height() - m_img.height()) * 0.5f + m_offset_y);
 
   QPainter painter(this);
 
@@ -291,22 +298,24 @@ void MeshWarpWidget::paintEvent(QPaintEvent *event)
 
 void MeshWarpWidget::mouseMoveEvent(QMouseEvent *event)
 {
-#if 0
-  if (m_active_cp != nullptr)
-  {
-    m_active_cp->x = event->x() - m_transform.dx();
-    m_active_cp->y = event->y() - m_transform.dy();
-    update();
-  }
-#else
   if (m_has_active_cp)
   {
-    m_mesh.setPoint(m_active_cp_x, m_active_cp_y,
-                    event->x() - m_transform.dx(),
-                    event->y() - m_transform.dy());
+    int x = 0, y = 0;
+    m_transform.inverted().map(event->x(), event->y(), &x, &y);
+    m_mesh.setPoint(m_active_cp_x, m_active_cp_y, x, y);
+
+    //m_mesh.setPoint(m_active_cp_x, m_active_cp_y,
+    //                event->x() + m_transform.inverted().dx(),
+    //                event->y() + m_transform.inverted().dy());
     update();
   }
-#endif
+  else if (m_panning)
+  {
+    //std::cerr << "Panning: event_x=" << event->x() << ", event_y=" << event->y() << ", offset_x=" << m_offset_x << ", m_offset_y=" << m_offset_y << std::endl;
+    m_offset_x = (event->x() - m_origin_x) + m_vect_x;
+    m_offset_y = (event->y() - m_origin_y) + m_vect_y;
+    update();
+  }
 
   return QWidget::mouseMoveEvent(event);
 }
@@ -314,31 +323,41 @@ void MeshWarpWidget::mouseMoveEvent(QMouseEvent *event)
 
 void MeshWarpWidget::mousePressEvent(QMouseEvent *event)
 {
-#if 0
-  m_active_cp = m_mesh.findPoint(event->x() - m_transform.dx(),
-                                 event->y() - m_transform.dy(),
-                                 CONTROL_POINT_SIZE);
-  if (m_active_cp != nullptr)
-  {
-    std::cerr << "Found: " << *m_active_cp << std::endl;
-  }
-#else
-  m_has_active_cp = m_mesh.findPoint(event->x() - m_transform.dx(),
-                                     event->y() - m_transform.dy(),
-                                     m_active_cp_x, m_active_cp_y,
+  std::cerr << "Searching control point at: ["
+            << (event->x() + m_transform.inverted().dx())
+            << ", "
+            << (event->y() + m_transform.inverted().dy())
+            << "]" << std::endl;
+
+  std::cerr << "Mesh at [1, 1]" << m_mesh.at(1, 1) << std::endl;
+
+  int x = 0, y = 0;
+  m_transform.inverted().map(event->x(), event->y(), &x, &y);
+  std::cerr << "mapped point: x=" << x << ",y=" << y << std::endl;
+  m_has_active_cp = m_mesh.findPoint(x, y, m_active_cp_x, m_active_cp_y,
                                      CONTROL_POINT_SIZE / 2);
+
+  //m_has_active_cp = m_mesh.findPoint(event->x() + m_transform.inverted().dx(),
+  //                                   event->y() + m_transform.inverted().dy(),
+  //                                   m_active_cp_x, m_active_cp_y,
+  //                                   CONTROL_POINT_SIZE / 2);
+
   if (m_has_active_cp)
   {
     std::cerr << "Found: [" << m_active_cp_x << "," << m_active_cp_y << "]" << std::endl;
+    m_panning = false;
     emit activeCPChanged(m_active_cp_x, m_active_cp_y);
   }
   else
   {
+    std::cerr << "Panning enabled" << std::endl;
+    m_origin_x = event->x();
+    m_origin_y = event->y();
+    m_panning = true;
     emit activeCPDeactivated();
   }
 
   update();
-#endif
 
   return QWidget::mousePressEvent(event);
 }
@@ -346,13 +365,6 @@ void MeshWarpWidget::mousePressEvent(QMouseEvent *event)
 
 void MeshWarpWidget::mouseReleaseEvent(QMouseEvent *event)
 {
-#if 0
-  if (m_active_cp != nullptr)
-  {
-    m_img = warp(m_orig_img, m_orig_mesh, m_mesh);
-    update();
-  }
-#else
   if (m_has_active_cp)
   {
     if (m_show_warped)
@@ -362,7 +374,58 @@ void MeshWarpWidget::mouseReleaseEvent(QMouseEvent *event)
 
     update();
   }
-#endif
+  else if (m_panning)
+  {
+    m_vect_x += (event->x() - m_origin_x);
+    m_vect_y += (event->y() - m_origin_y);
+    m_panning = false;
+    std::cerr << "Panning DISabled" << std::endl;
+  }
 
   return QWidget::mouseReleaseEvent(event);
+}
+
+
+void MeshWarpWidget::wheelEvent(QWheelEvent *event)
+{
+  if (event->delta() > 0)
+  {
+    m_scale += 0.1;
+  }
+  else
+  {
+    m_scale -= 0.1;
+  }
+
+  if (m_scale > 5.0f) m_scale = 5.0f;
+  if (m_scale <= 0.0f) m_scale = 0.01f;
+
+  std::cerr << "m_scale: " << m_scale << std::endl;
+  update();
+  return QWidget::wheelEvent(event);
+}
+
+
+void MeshWarpWidget::resetTransformations(void)
+{
+  m_scale = 1.0f;
+  m_origin_x = 0;
+  m_origin_y = 0;
+  m_vect_x = 0;
+  m_vect_y = 0;
+  m_offset_x = 0;
+  m_offset_y = 0;
+  m_transform = QTransform();
+}
+
+
+void MeshWarpWidget::keyPressEvent(QKeyEvent *event)
+{
+  std::cerr << __FUNCTION__ << std::endl;
+  switch (event->key())
+  {
+    case Qt::Key_R: resetTransformations(); update(); break;
+  }
+
+  return QWidget::keyPressEvent(event);
 }

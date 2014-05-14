@@ -15,7 +15,14 @@ class MeshWarpWidget : public QWidget
   public:
     explicit MeshWarpWidget(QWidget *parent = 0)
       : QWidget(parent)
-      //, m_active_cp(nullptr)
+      , m_scale(1.0f)
+      , m_origin_x(0)
+      , m_origin_y(0)
+      , m_vect_x(0)
+      , m_vect_y(0)
+      , m_offset_x(0)
+      , m_offset_y(0)
+      , m_panning(false)
       , m_active_cp_x(0)
       , m_active_cp_y(0)
       , m_has_active_cp(false)
@@ -28,11 +35,19 @@ class MeshWarpWidget : public QWidget
     {
       std::cout << "Original mesh : " << m_orig_mesh << std::endl;
       std::cout << "New mesh      : " << m_mesh << std::endl;
+      setFocusPolicy(Qt::StrongFocus);
     }
 
     explicit MeshWarpWidget(const QImage & img, QWidget *parent = 0)
       : QWidget(parent)
-      //, m_active_cp(nullptr)
+      , m_scale(1.0f)
+      , m_origin_x(0)
+      , m_origin_y(0)
+      , m_vect_x(0)
+      , m_vect_y(0)
+      , m_offset_x(0)
+      , m_offset_y(0)
+      , m_panning(false)
       , m_active_cp_x(0)
       , m_active_cp_y(0)
       , m_has_active_cp(false)
@@ -45,6 +60,7 @@ class MeshWarpWidget : public QWidget
     {
       std::cout << "Original mesh : " << m_orig_mesh << std::endl;
       std::cout << "New mesh      : " << m_mesh << std::endl;
+      setFocusPolicy(Qt::StrongFocus);
     }
 
     const Mesh & mesh(void) const { return m_mesh; }
@@ -72,15 +88,25 @@ class MeshWarpWidget : public QWidget
     virtual void mouseMoveEvent(QMouseEvent *event) override;
     virtual void mousePressEvent(QMouseEvent *event) override;
     virtual void mouseReleaseEvent(QMouseEvent *event) override;
+    virtual void wheelEvent(QWheelEvent *event) override;
+    virtual void keyPressEvent(QKeyEvent *event) override;
 
   private:
     //void drawMesh(QPainter & painter);
     //void drawActiveCP(QPainter & painter);
 
     QImage drawMesh(void);
+    void resetTransformations(void);
 
   private:
-    //Point *m_active_cp;   // the currently active control point
+    float m_scale;
+    int m_origin_x;
+    int m_origin_y;
+    int m_vect_x;
+    int m_vect_y;
+    int m_offset_x;
+    int m_offset_y;
+    bool m_panning;
     int m_active_cp_x;
     int m_active_cp_y;
     bool m_has_active_cp;

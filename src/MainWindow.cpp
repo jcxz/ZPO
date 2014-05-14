@@ -40,7 +40,7 @@ MainWindow::~MainWindow(void)
 }
 
 
-void MainWindow::on_pushButton_clicked()
+void MainWindow::morph(void)
 {
   //morph(ui->srcWarp->image(), ui->srcWarp->mesh(),
   //      ui->dstWarp->image(), ui->dstWarp->mesh(),
