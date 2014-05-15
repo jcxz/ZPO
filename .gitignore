@@ -26,6 +26,8 @@ ZPO.exe
 # ignore debug and release directories
 /odovzdanie
 /odovzdanie/*
+/bordel
+/bordel/*
 /output
 /output/*
 /obj
