@@ -38,3 +38,9 @@ are blended together to create a single frame of the morph sequence.
 - For easier editing of large images user can pan and zoom
 - The point of the controlling mesh that is currently being edited is for easier
   navigation highlighted in both source and destination mesh
+  
+# Screenshots
+
+![Starting to edit the mesh](doc/screen_starting.png)
+![In the process of editing](doc/screen_in_progress.png)
+![Previewing the finished work](doc/screen_finished.png)
